@@ -7,17 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Component {
-  id           Int    @id @default(autoincrement())
-  // date         String
-  number       String
-  description  String
-  firm         String
+model Part {
+  id           Int      @id @default(autoincrement())
+  materialType String
+  partNumber   String   @unique
+  location     String
+  price        Decimal? @db.Decimal(12, 2)
   quantity     Int
-  price        Float
-  currency     String
-  purchaseDate String
-  source       String
+  channel      String?
+  caseType     String?
+  voltage      String?
+  current      String?
+  value        String?
+  unit         String?
+  power        String?
+  description  String?
+  image        Bytes?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
