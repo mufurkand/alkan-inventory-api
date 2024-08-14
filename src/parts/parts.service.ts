@@ -1,25 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { DatabaseService } from 'src/database/database.service';
+import { CreatePartDto } from './dto/create-part.dto';
+import { UpdatePartDto } from './dto/update-part.dto';
 
 @Injectable()
 export class PartsService {
-  create(createPartDto: Prisma.PartCreateInput) {
-    return 'This action adds a new part';
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async create(createPartDto: CreatePartDto) {
+    // await statement is in the database service already
+    console.log(typeof createPartDto);
+    return this.databaseService.part.create({ data: createPartDto });
   }
 
-  findAll() {
-    return `This action returns all parts`;
+  async findAll() {
+    return this.databaseService.part.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} part`;
+  async findOne(id: number) {
+    return this.databaseService.part.findUnique({ where: { id } });
   }
 
-  update(id: number, updatePartDto: Prisma.PartUpdateInput) {
-    return `This action updates a #${id} part`;
+  async update(id: number, updatePartDto: UpdatePartDto) {
+    return this.databaseService.part.update({
+      where: { id },
+      data: updatePartDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} part`;
+  async remove(id: number) {
+    return this.databaseService.part.delete({ where: { id } });
   }
 }

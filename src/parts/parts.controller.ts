@@ -8,14 +8,15 @@ import {
   Delete,
 } from '@nestjs/common';
 import { PartsService } from './parts.service';
-import { Prisma } from '@prisma/client';
+import { CreatePartDto } from './dto/create-part.dto';
+import { UpdatePartDto } from './dto/update-part.dto';
 
 @Controller('parts')
 export class PartsController {
   constructor(private readonly partsService: PartsService) {}
 
   @Post()
-  create(@Body() createPartDto: Prisma.PartCreateInput) {
+  create(@Body() createPartDto: CreatePartDto) {
     return this.partsService.create(createPartDto);
   }
 
@@ -30,10 +31,7 @@ export class PartsController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePartDto: Prisma.PartUpdateInput,
-  ) {
+  update(@Param('id') id: string, @Body() updatePartDto: UpdatePartDto) {
     return this.partsService.update(+id, updatePartDto);
   }
 
