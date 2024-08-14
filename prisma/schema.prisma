@@ -22,6 +22,7 @@ model Part {
   unit         String?
   power        String?
   description  String?
+  imagePath    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

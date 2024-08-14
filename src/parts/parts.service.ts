@@ -7,10 +7,12 @@ import { UpdatePartDto } from './dto/update-part.dto';
 export class PartsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(createPartDto: CreatePartDto) {
+  async create(createPartDto: CreatePartDto, imagePath: string | null) {
     // await statement is in the database service already
     console.log(typeof createPartDto);
-    return this.databaseService.part.create({ data: createPartDto });
+    return this.databaseService.part.create({
+      data: { ...createPartDto, imagePath },
+    });
   }
 
   async findAll() {
