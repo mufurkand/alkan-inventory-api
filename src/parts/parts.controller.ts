@@ -60,11 +60,33 @@ export class PartsController {
   }
 
   @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './public/uploads',
+        filename: (req, file, cb) => {
+          const filename = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const extension = path.extname(file.originalname);
+          cb(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  @UseFilters(ImageExceptionFilter)
   update(
     @Param('id') id: string,
-    @Body(new ValidationPipe({ whitelist: true })) updatePartDto: UpdatePartDto,
+    @Body(
+      new ParseIntFieldsPipe(['price', 'quantity']),
+      new ValidationPipe({ whitelist: true }),
+    )
+    updatePartDto: UpdatePartDto,
+    @UploadedFile() image: Express.Multer.File,
   ) {
-    return this.partsService.update(+id, updatePartDto);
+    return this.partsService.update(
+      +id,
+      updatePartDto,
+      image ? image.path : null,
+    );
   }
 
   @Delete(':id')
