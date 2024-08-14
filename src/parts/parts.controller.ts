@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PartsService } from './parts.service';
 import { CreatePartDto } from './dto/create-part.dto';
@@ -16,7 +17,9 @@ export class PartsController {
   constructor(private readonly partsService: PartsService) {}
 
   @Post()
-  create(@Body() createPartDto: CreatePartDto) {
+  create(
+    @Body(new ValidationPipe({ whitelist: true })) createPartDto: CreatePartDto,
+  ) {
     return this.partsService.create(createPartDto);
   }
 
@@ -31,7 +34,10 @@ export class PartsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePartDto: UpdatePartDto) {
+  update(
+    @Param('id') id: string,
+    @Body(new ValidationPipe({ whitelist: true })) updatePartDto: UpdatePartDto,
+  ) {
     return this.partsService.update(+id, updatePartDto);
   }
 
