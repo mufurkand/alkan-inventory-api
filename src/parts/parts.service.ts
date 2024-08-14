@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePartDto } from './dto/create-part.dto';
-import { UpdatePartDto } from './dto/update-part.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PartsService {
-  create(createPartDto: CreatePartDto) {
+  create(createPartDto: Prisma.PartCreateInput) {
     return 'This action adds a new part';
   }
 
@@ -16,7 +15,7 @@ export class PartsService {
     return `This action returns a #${id} part`;
   }
 
-  update(id: number, updatePartDto: UpdatePartDto) {
+  update(id: number, updatePartDto: Prisma.PartUpdateInput) {
     return `This action updates a #${id} part`;
   }
 
