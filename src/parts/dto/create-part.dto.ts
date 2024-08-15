@@ -3,53 +3,53 @@ import { IsString, IsNumber, IsOptional, IsNotEmpty } from 'class-validator';
 export class CreatePartDto {
   @IsString()
   @IsNotEmpty()
-  materialType: string;
+  readonly materialType: string;
 
   @IsString()
   @IsNotEmpty()
-  partNumber: string;
+  readonly partNumber: string;
 
   @IsString()
   @IsNotEmpty()
-  location: string;
+  readonly location: string;
 
   @IsNumber()
   @IsOptional()
-  price: number;
+  readonly price: number;
 
   @IsNumber()
   @IsNotEmpty()
-  quantity: number;
+  readonly quantity: number;
 
   @IsString()
   @IsOptional()
-  channel: string;
+  readonly channel: string;
 
   @IsString()
   @IsOptional()
-  caseType: string;
+  readonly caseType: string;
 
   @IsString()
   @IsOptional()
-  voltage: string;
+  readonly voltage: string;
 
   @IsString()
   @IsOptional()
-  current: string;
+  readonly current: string;
 
   @IsString()
   @IsOptional()
-  value: string;
+  readonly value: string;
 
   @IsString()
   @IsOptional()
-  unit: string;
+  readonly unit: string;
 
   @IsString()
   @IsOptional()
-  power: string;
+  readonly power: string;
 
   @IsString()
   @IsOptional()
-  description: string;
+  readonly description: string;
 }

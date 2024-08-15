@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  ValidationPipe,
   UseInterceptors,
   UploadedFile,
   UseFilters,
@@ -17,8 +16,8 @@ import { UpdatePartDto } from './dto/update-part.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
-import { ParseIntFieldsPipe } from './pipes/parse-int-fields.pipe';
 import { ImageExceptionFilter } from './filters/image-exception.filter';
+import { IdDto } from 'src/common/dto/id.dto';
 
 @Controller('parts')
 export class PartsController {
@@ -39,10 +38,7 @@ export class PartsController {
   )
   @UseFilters(ImageExceptionFilter)
   create(
-    @Body(
-      new ParseIntFieldsPipe(['price', 'quantity']),
-      new ValidationPipe({ whitelist: true }),
-    )
+    @Body()
     createPartDto: CreatePartDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
@@ -55,8 +51,8 @@ export class PartsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.partsService.findOne(+id);
+  findOne(@Param() { id }: IdDto) {
+    return this.partsService.findOne(id);
   }
 
   @Patch(':id')
@@ -74,23 +70,20 @@ export class PartsController {
   )
   @UseFilters(ImageExceptionFilter)
   update(
-    @Param('id') id: string,
-    @Body(
-      new ParseIntFieldsPipe(['price', 'quantity']),
-      new ValidationPipe({ whitelist: true }),
-    )
+    @Param() { id }: IdDto,
+    @Body()
     updatePartDto: UpdatePartDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
     return this.partsService.update(
-      +id,
+      id,
       updatePartDto,
       image ? image.path : null,
     );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.partsService.remove(+id);
+  remove(@Param() { id }: IdDto) {
+    return this.partsService.remove(id);
   }
 }
