@@ -3,6 +3,8 @@ import { DatabaseService } from 'src/database/database.service';
 import { CreatePartDto } from './dto/create-part.dto';
 import { UpdatePartDto } from './dto/update-part.dto';
 import * as fs from 'fs';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { DEFAULT_PAGE_SIZE } from 'src/common/constants/common.constants';
 
 @Injectable()
 export class PartsService {
@@ -15,8 +17,28 @@ export class PartsService {
     });
   }
 
-  async findAll() {
-    return this.databaseService.part.findMany();
+  async findAll(paginationDto: PaginationDto) {
+    const { limit = DEFAULT_PAGE_SIZE.PART, offset = 0 } = paginationDto;
+    let nextPage: number | boolean = offset + limit;
+    let previousPage: number | boolean = offset - limit;
+
+    // Fetch limit + 1 items to check if next page exists
+    const data = await this.databaseService.part.findMany({
+      skip: offset,
+      take: limit + 1,
+    });
+
+    // Determine if there is a next page
+    if (data.length > limit) {
+      data.pop(); // Remove the extra item
+    } else {
+      nextPage = false;
+    }
+
+    if (offset === 0) previousPage = false;
+    else if (previousPage < 0) previousPage = 0;
+
+    return { data, nextPage, previousPage };
   }
 
   async findOne(id: number) {

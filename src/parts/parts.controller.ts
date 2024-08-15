@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { PartsService } from './parts.service';
 import { CreatePartDto } from './dto/create-part.dto';
@@ -18,6 +19,7 @@ import { diskStorage } from 'multer';
 import * as path from 'path';
 import { ImageExceptionFilter } from './filters/image-exception.filter';
 import { IdDto } from 'src/common/dto/id.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('parts')
 export class PartsController {
@@ -46,8 +48,8 @@ export class PartsController {
   }
 
   @Get()
-  findAll() {
-    return this.partsService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.partsService.findAll(paginationDto);
   }
 
   @Get(':id')
