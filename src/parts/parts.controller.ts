@@ -18,8 +18,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import { ImageExceptionFilter } from './filters/image-exception.filter';
-import { IdDto } from 'src/common/dto/id.dto';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { IdDto } from './dto/id.dto';
+import { PaginationDto } from './dto/pagination.dto';
+import { SearchFiltersDto } from './dto/search-filters.dto';
+import { SearchDto } from './dto/search.dto';
 
 @Controller('parts')
 export class PartsController {
@@ -50,6 +52,19 @@ export class PartsController {
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.partsService.findAll(paginationDto);
+  }
+
+  @Post('search')
+  search(
+    @Query() paginationDto: PaginationDto,
+    @Body() searchFiltersDto: SearchFiltersDto,
+  ) {
+    return this.partsService.search(paginationDto, searchFiltersDto);
+  }
+
+  @Get('filters')
+  filters(@Query() { search }: SearchDto) {
+    return this.partsService.filters(search);
   }
 
   @Get(':id')
