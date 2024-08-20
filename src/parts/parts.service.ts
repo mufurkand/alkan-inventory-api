@@ -56,8 +56,9 @@ export class PartsService {
       where: { id },
     });
 
-    // Check if the current part has an imagePath and delete the previous image if a new one is provided
-    if (currentPart?.imagePath && imagePath) {
+    // Check if the current part has an imagePath and delete the previous image if a new one is
+    // provided or if the imagePath is being removed (i.e. set to null)
+    if (currentPart?.imagePath) {
       fs.unlink(currentPart.imagePath, (err) => {
         if (err) {
           console.error('Failed to delete image:', err);
