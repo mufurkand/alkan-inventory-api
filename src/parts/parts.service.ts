@@ -56,9 +56,12 @@ export class PartsService {
       where: { id },
     });
 
-    // Check if the current part has an imagePath and delete the previous image if a new one is
-    // provided or if the imagePath is being removed (i.e. set to null)
-    if (currentPart?.imagePath) {
+    const { updateImageJson, ...updateData } = updatePartDto;
+    const { updateImage } = JSON.parse(updateImageJson);
+
+    // Check if the current part has an imagePath and delete the previous image if updateImage is
+    // true
+    if (currentPart?.imagePath && updateImage) {
       fs.unlink(currentPart.imagePath, (err) => {
         if (err) {
           console.error('Failed to delete image:', err);
@@ -66,10 +69,32 @@ export class PartsService {
       });
     }
 
+    if (typeof updateImage !== 'boolean') {
+      throw new Error('Invalid image update value');
+    }
+
+    if (updateImage === false && imagePath !== null) {
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error('Failed to delete image:', err);
+        }
+      });
+    }
+
+    console.log('=>>', updateImage, imagePath, currentPart?.imagePath);
+    console.log(updatePartDto);
+
     // Update the part with the new details
     return this.databaseService.part.update({
       where: { id },
-      data: { ...updatePartDto, imagePath },
+      data: {
+        ...updateData,
+        imagePath: updateImage
+          ? imagePath
+          : currentPart?.imagePath === undefined
+            ? null
+            : currentPart.imagePath,
+      },
     });
   }
 
