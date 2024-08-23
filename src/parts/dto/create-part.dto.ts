@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
 
 export class CreatePartDto {
   @IsString()
@@ -10,16 +10,16 @@ export class CreatePartDto {
   readonly partNumber: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   readonly location: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  readonly price: number;
+  readonly price: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  readonly quantity: number;
+  @IsString()
+  @IsOptional()
+  readonly quantity: string;
 
   @IsString()
   @IsOptional()

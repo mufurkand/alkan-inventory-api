@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Part {
-  id           Int      @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   materialType String
-  partNumber   String   @unique
-  location     String
-  price        Decimal? @db.Decimal(12, 2)
-  quantity     Int
+  partNumber   String  @unique
+  location     String?
+  price        String?
+  quantity     String?
   channel      String?
   caseType     String?
   voltage      String?

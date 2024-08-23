@@ -27,6 +27,25 @@ import { SearchDto } from './dto/search.dto';
 export class PartsController {
   constructor(private readonly partsService: PartsService) {}
 
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('excel', {
+      storage: diskStorage({
+        destination: './public/data',
+        filename: (req, file, cb) => {
+          console.log('FILE INTERCEPTOR TRIGGERED');
+          const filename = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const extension = path.extname(file.originalname);
+          cb(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  upload(@UploadedFile() excel: Express.Multer.File) {
+    console.log('=>>', excel);
+    return this.partsService.upload(excel ? excel.path : null);
+  }
+
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {

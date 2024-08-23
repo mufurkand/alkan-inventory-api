@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import { PaginationDto } from './dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from 'src/common/constants/common.constants';
 import { SearchFiltersDto } from './dto/search-filters.dto';
+import * as xlsx from 'xlsx';
 
 @Injectable()
 export class PartsService {
@@ -16,6 +17,40 @@ export class PartsService {
     return this.databaseService.part.create({
       data: { ...createPartDto, imagePath },
     });
+  }
+
+  // TODO: see if I can create records without having to save the file
+  async upload(excelPath: string | null) {
+    // import the excel file and save the data to the database
+    if (!excelPath) {
+      throw new Error('Invalid file path');
+    }
+
+    const workbook = xlsx.readFile(excelPath);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet, { defval: null, raw: false });
+
+    fs.unlink(excelPath, (err) => {
+      if (err) {
+        console.error('Failed to delete sheet:', err);
+      }
+    });
+
+    try {
+      const batchSize = 1000; // Adjust the batch size as needed
+      for (let i = 0; i < data.length; i += batchSize) {
+        const batch = data.slice(i, i + batchSize);
+        await this.databaseService.part.createMany({
+          data: batch as CreatePartDto[],
+          skipDuplicates: true,
+        });
+      }
+      console.log('Data imported successfully');
+    } catch (error) {
+      console.error('Error importing data:', error);
+    }
+    return true;
   }
 
   async findAll(paginationDto: PaginationDto) {
@@ -142,8 +177,8 @@ export class PartsService {
     if (search)
       searchQuery = {
         OR: [
-          { partNumber: { contains: search } },
-          { description: { contains: search } },
+          { partNumber: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
         ],
       };
 
