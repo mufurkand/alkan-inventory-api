@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseFilters,
   Query,
+  Res,
 } from '@nestjs/common';
 import { PartsService } from './parts.service';
 import { CreatePartDto } from './dto/create-part.dto';
@@ -22,6 +23,7 @@ import { IdDto } from './dto/id.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import { SearchFiltersDto } from './dto/search-filters.dto';
 import { SearchDto } from './dto/search.dto';
+import { Response } from 'express';
 
 @Controller('parts')
 export class PartsController {
@@ -84,6 +86,11 @@ export class PartsController {
   @Get('filters')
   filters(@Query() { search }: SearchDto) {
     return this.partsService.filters(search);
+  }
+
+  @Get('download')
+  download(@Res() res: Response) {
+    return this.partsService.download(res);
   }
 
   @Get(':id')

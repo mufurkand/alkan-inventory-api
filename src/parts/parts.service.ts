@@ -7,6 +7,7 @@ import { PaginationDto } from './dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from 'src/common/constants/common.constants';
 import { SearchFiltersDto } from './dto/search-filters.dto';
 import * as xlsx from 'xlsx';
+import { Response } from 'express';
 
 @Injectable()
 export class PartsService {
@@ -51,6 +52,27 @@ export class PartsService {
       console.error('Error importing data:', error);
     }
     return true;
+  }
+
+  async download(res: Response) {
+    const parts = await this.databaseService.part.findMany();
+
+    const worksheet = xlsx.utils.json_to_sheet(parts);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Parts');
+
+    const excelBuffer = xlsx.write(workbook, {
+      type: 'buffer',
+      bookType: 'xlsx',
+    });
+
+    res.setHeader('Content-Disposition', 'attachment; filename=parts.xlsx');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+
+    res.send(excelBuffer);
   }
 
   async findAll(paginationDto: PaginationDto) {
