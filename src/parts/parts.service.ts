@@ -39,7 +39,7 @@ export class PartsService {
     });
 
     try {
-      const batchSize = 1000; // Adjust the batch size as needed
+      const batchSize = 1000;
       for (let i = 0; i < data.length; i += batchSize) {
         const batch = data.slice(i, i + batchSize);
         await this.databaseService.part.createMany({
