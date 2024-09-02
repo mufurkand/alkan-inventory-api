@@ -26,22 +26,16 @@ export class PartsService {
   }
 
   // TODO: see if I can create records without having to save the file
-  async upload(excelPath: string | null) {
+  async upload(excelBuffer: Buffer | null) {
     // import the excel file and save the data to the database
-    if (!excelPath) {
+    if (!excelBuffer) {
       throw new Error('Invalid file path');
     }
 
-    const workbook = xlsx.readFile(excelPath);
+    const workbook = xlsx.read(excelBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json(sheet, { defval: null, raw: false });
-
-    fs.unlink(excelPath, (err) => {
-      if (err) {
-        console.error('Failed to delete sheet:', err);
-      }
-    });
 
     try {
       const transactionPromises = [];

@@ -16,7 +16,7 @@ import { PartsService } from './parts.service';
 import { CreatePartDto } from './dto/create-part.dto';
 import { UpdatePartDto } from './dto/update-part.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { diskStorage, memoryStorage } from 'multer';
 import * as path from 'path';
 import { ImageExceptionFilter } from './filters/image-exception.filter';
 import { IdDto } from './dto/id.dto';
@@ -32,18 +32,11 @@ export class PartsController {
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('excel', {
-      storage: diskStorage({
-        destination: './public/data',
-        filename: (req, file, cb) => {
-          const filename = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const extension = path.extname(file.originalname);
-          cb(null, `${filename}${extension}`);
-        },
-      }),
+      storage: memoryStorage(),
     }),
   )
   upload(@UploadedFile() excel: Express.Multer.File) {
-    return this.partsService.upload(excel ? excel.path : null);
+    return this.partsService.upload(excel ? excel.buffer : null);
   }
 
   @Post()
