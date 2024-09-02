@@ -4,7 +4,10 @@ import { CreatePartDto } from './dto/create-part.dto';
 import { UpdatePartDto } from './dto/update-part.dto';
 import * as fs from 'fs';
 import { PaginationDto } from './dto/pagination.dto';
-import { DEFAULT_PAGE_SIZE } from 'src/common/constants/common.constants';
+import {
+  BATCH_SIZE,
+  DEFAULT_PAGE_SIZE,
+} from 'src/common/constants/common.constants';
 import { SearchFiltersDto } from './dto/search-filters.dto';
 import * as xlsx from 'xlsx';
 import { Response } from 'express';
@@ -12,6 +15,8 @@ import { Response } from 'express';
 @Injectable()
 export class PartsService {
   constructor(private readonly databaseService: DatabaseService) {}
+
+  // TODO: write a constructSearchQuery function
 
   async create(createPartDto: CreatePartDto, imagePath: string | null) {
     // await statement is in the database service already
@@ -39,15 +44,21 @@ export class PartsService {
     });
 
     try {
-      const batchSize = 1000;
-      for (let i = 0; i < data.length; i += batchSize) {
-        const batch = data.slice(i, i + batchSize);
-        await this.databaseService.part.createMany({
-          data: batch as CreatePartDto[],
-          skipDuplicates: true,
-        });
+      const transactionPromises = [];
+
+      for (let i = 0; i < data.length; i += BATCH_SIZE) {
+        const batch = data.slice(i, i + BATCH_SIZE);
+        transactionPromises.push(
+          this.databaseService.$transaction([
+            this.databaseService.part.createMany({
+              data: batch as CreatePartDto[],
+              skipDuplicates: true,
+            }),
+          ]),
+        );
       }
-      console.log('Data imported successfully');
+
+      await Promise.all(transactionPromises);
     } catch (error) {
       console.error('Error importing data:', error);
     }
@@ -55,11 +66,35 @@ export class PartsService {
   }
 
   async download(res: Response) {
-    const parts = await this.databaseService.part.findMany();
-
-    const worksheet = xlsx.utils.json_to_sheet(parts);
+    let offset = 0;
+    let parts = [];
+    const worksheet = xlsx.utils.json_to_sheet([]);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, 'Parts');
+
+    let isFirstRun = true;
+
+    do {
+      parts = await this.databaseService.part.findMany({
+        skip: offset,
+        take: BATCH_SIZE,
+        omit: {
+          id: true,
+          imagePath: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      if (parts.length > 0) {
+        xlsx.utils.sheet_add_json(worksheet, parts, {
+          skipHeader: !isFirstRun,
+          origin: isFirstRun ? 'A1' : -1,
+        });
+        offset += BATCH_SIZE;
+        isFirstRun = false;
+      }
+    } while (parts.length === BATCH_SIZE);
 
     const excelBuffer = xlsx.write(workbook, {
       type: 'buffer',
@@ -137,9 +172,6 @@ export class PartsService {
         }
       });
     }
-
-    console.log('=>>', updateImage, imagePath, currentPart?.imagePath);
-    console.log(updatePartDto);
 
     // Update the part with the new details
     return this.databaseService.part.update({
@@ -235,8 +267,8 @@ export class PartsService {
       query = {
         where: {
           OR: [
-            { partNumber: { contains: search } },
-            { description: { contains: search } },
+            { partNumber: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
           ],
         },
       };
