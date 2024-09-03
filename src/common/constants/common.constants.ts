@@ -14,3 +14,5 @@ export const DEFAULT_PAGE_SIZE = {
 } as const satisfies Record<string, number>;
 
 export const BATCH_SIZE = 1000;
+
+export const SALT_OR_ROUNDS = 10;
