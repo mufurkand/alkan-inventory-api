@@ -4,13 +4,11 @@ import { CreatePartDto } from './dto/create-part.dto';
 import { UpdatePartDto } from './dto/update-part.dto';
 import * as fs from 'fs';
 import { PaginationDto } from './dto/pagination.dto';
-import {
-  BATCH_SIZE,
-  DEFAULT_PAGE_SIZE,
-} from 'src/common/constants/common.constants';
+import { BATCH_SIZE, DEFAULT_PAGE_SIZE } from 'src/lib/constants/constants';
 import { SearchFiltersDto } from './dto/search-filters.dto';
 import * as xlsx from 'xlsx';
 import { Response } from 'express';
+import { constructSearchQuery } from 'src/lib/helpers/helpers';
 
 @Injectable()
 export class PartsService {
@@ -222,13 +220,7 @@ export class PartsService {
         power: { in: filters.power },
       };
 
-    if (search)
-      searchQuery = {
-        OR: [
-          { partNumber: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } },
-        ],
-      };
+    if (search) searchQuery = constructSearchQuery(search);
 
     // Fetch limit + 1 items to check if next page exists
     const data = await this.databaseService.part.findMany({
@@ -260,10 +252,7 @@ export class PartsService {
     if (search)
       query = {
         where: {
-          OR: [
-            { partNumber: { contains: search, mode: 'insensitive' } },
-            { description: { contains: search, mode: 'insensitive' } },
-          ],
+          ...constructSearchQuery(search),
         },
       };
 

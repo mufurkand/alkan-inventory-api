@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { VALIDATION_PIPE_OPTIONS } from './common/constants/common.constants';
+import { VALIDATION_PIPE_OPTIONS } from './lib/constants/constants';
 import { urlencoded, json } from 'express';
 
 async function bootstrap() {

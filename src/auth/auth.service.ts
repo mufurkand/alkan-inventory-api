@@ -3,7 +3,7 @@ import { AuthPayloadDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
 import * as bcrypt from 'bcrypt';
-import { SALT_OR_ROUNDS } from 'src/common/constants/common.constants';
+import { SALT_OR_ROUNDS } from 'src/lib/constants/common.constants';
 
 @Injectable()
 export class AuthService implements OnModuleInit {

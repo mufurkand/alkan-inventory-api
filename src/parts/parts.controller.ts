@@ -11,6 +11,7 @@ import {
   UseFilters,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { PartsService } from './parts.service';
 import { CreatePartDto } from './dto/create-part.dto';
@@ -24,11 +25,13 @@ import { PaginationDto } from './dto/pagination.dto';
 import { SearchFiltersDto } from './dto/search-filters.dto';
 import { SearchDto } from './dto/search.dto';
 import { Response } from 'express';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('parts')
 export class PartsController {
   constructor(private readonly partsService: PartsService) {}
 
+  @UseGuards(JwtGuard)
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('excel', {
@@ -39,6 +42,7 @@ export class PartsController {
     return this.partsService.upload(excel ? excel.buffer : null);
   }
 
+  @UseGuards(JwtGuard)
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -79,6 +83,7 @@ export class PartsController {
     return this.partsService.filters(search);
   }
 
+  @UseGuards(JwtGuard)
   @Get('download')
   download(@Res() res: Response) {
     return this.partsService.download(res);
@@ -89,6 +94,7 @@ export class PartsController {
     return this.partsService.findOne(id);
   }
 
+  @UseGuards(JwtGuard)
   @Patch(':id')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -116,6 +122,7 @@ export class PartsController {
     );
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
   remove(@Param() { id }: IdDto) {
     return this.partsService.remove(id);
