@@ -49,7 +49,10 @@ export class AuthService implements OnModuleInit {
 
     if (match) {
       const { password, ...user } = findUser;
-      return this.jwtService.sign(user);
+      return {
+        user: { id: user.id, username: user.username, role: user.role },
+        token: this.jwtService.sign(user),
+      };
     }
   }
 }
