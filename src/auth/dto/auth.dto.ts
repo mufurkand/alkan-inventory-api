@@ -3,9 +3,9 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class AuthPayloadDto {
   @IsString()
   @IsNotEmpty()
-  username: string;
+  readonly username: string;
 
   @IsString()
   @IsNotEmpty()
-  password: string;
+  readonly password: string;
 }

@@ -16,3 +16,19 @@ export const DEFAULT_PAGE_SIZE = {
 export const BATCH_SIZE = 1000;
 
 export const SALT_OR_ROUNDS = 10;
+
+export const USER_OMIT_QUERY = {
+  omit: {
+    password: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+} as const;
+
+export type JwtPayload = {
+  id: number;
+  username: string;
+  role: string;
+  iat: number;
+  exp: number;
+};
