@@ -26,12 +26,13 @@ import { SearchFiltersDto } from './dto/search-filters.dto';
 import { SearchDto } from './dto/search.dto';
 import { Response } from 'express';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { AdminGuard } from 'src/auth/guards/admin.guard';
 
 @Controller('parts')
 export class PartsController {
   constructor(private readonly partsService: PartsService) {}
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, AdminGuard)
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('excel', {
@@ -83,7 +84,7 @@ export class PartsController {
     return this.partsService.filters(search);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, AdminGuard)
   @Get('download')
   download(@Res() res: Response) {
     return this.partsService.download(res);
