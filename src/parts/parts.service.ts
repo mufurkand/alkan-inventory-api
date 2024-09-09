@@ -208,7 +208,6 @@ export class PartsService {
     let prevPage: number | boolean = offset - limit;
 
     const { search, filters } = searchFiltersDto;
-    console.log(search);
 
     let filterQuery = {};
     let searchQuery = {};
