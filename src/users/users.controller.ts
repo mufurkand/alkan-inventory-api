@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +16,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { AdminGuard } from 'src/auth/guards/admin.guard';
 import { NoFilesInterceptor } from '@nestjs/platform-express';
+import { SearchDto } from './dto/search.dto';
+import { Request } from 'express';
 
 // TODO: create a dto for id
 
@@ -41,6 +44,15 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.usersService.findOne(id);
+  }
+
+  // TODO: add search dto
+  // FIXME: I can not get JSON to work
+  @UseGuards(JwtGuard, AdminGuard)
+  @UseInterceptors(NoFilesInterceptor())
+  @Post('search')
+  search(@Body() searchDto: SearchDto) {
+    return this.usersService.search(searchDto.search);
   }
 
   @UseGuards(JwtGuard, AdminGuard)

@@ -38,6 +38,19 @@ export class UsersService {
     });
   }
 
+  async search(search: string) {
+    let searchQuery = {};
+
+    if (search)
+      searchQuery = { username: { contains: search, mode: 'insensitive' } };
+
+    return this.databaseService.user.findMany({
+      where: {
+        ...searchQuery,
+      },
+    });
+  }
+
   update(id: number, updateUserDto: UpdateUserDto) {
     return this.databaseService.user.update({
       where: {
