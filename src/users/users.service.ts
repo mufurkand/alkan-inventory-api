@@ -48,6 +48,10 @@ export class UsersService {
     });
   }
 
+  removeAll() {
+    return this.databaseService.user.deleteMany({});
+  }
+
   remove(id: number) {
     return this.databaseService.user.delete({
       where: {

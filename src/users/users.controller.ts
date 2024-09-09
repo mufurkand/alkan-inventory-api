@@ -51,6 +51,12 @@ export class UsersController {
   }
 
   @UseGuards(JwtGuard, AdminGuard)
+  @Delete()
+  removeAll() {
+    return this.usersService.removeAll();
+  }
+
+  @UseGuards(JwtGuard, AdminGuard)
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.usersService.remove(id);

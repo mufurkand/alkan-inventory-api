@@ -26,6 +26,7 @@ export class ImageExceptionFilter implements ExceptionFilter {
       });
     }
 
+    // TODO: move this to a separate filter, as it is not related to image handling
     switch (exception.code) {
       case 'P2002':
         response.status(400).json({

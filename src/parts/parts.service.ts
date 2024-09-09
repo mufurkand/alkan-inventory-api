@@ -179,6 +179,10 @@ export class PartsService {
     });
   }
 
+  async removeAll() {
+    return this.databaseService.part.deleteMany({});
+  }
+
   async remove(id: number) {
     const currentPart = await this.databaseService.part.findUnique({
       where: { id },

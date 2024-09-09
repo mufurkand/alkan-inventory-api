@@ -123,6 +123,12 @@ export class PartsController {
     );
   }
 
+  @UseGuards(JwtGuard, AdminGuard)
+  @Delete()
+  removeAll() {
+    return this.partsService.removeAll();
+  }
+
   @UseGuards(JwtGuard)
   @Delete(':id')
   remove(@Param() { id }: IdDto) {
